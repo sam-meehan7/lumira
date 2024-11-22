@@ -7,7 +7,12 @@ import { QuestionSection } from "./question-section";
 import { VideoList } from "./video-list";
 import { VideoUpload } from "./video-upload";
 
-export function LibraryPageComponent() {
+interface LibraryPageComponentProps {
+  user: any;
+}
+
+export function LibraryPageComponent({ user }: LibraryPageComponentProps) {
+  console.log("Lib user", user);
   const [videos, setVideos] = useState<Video[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [question, setQuestion] = useState("");
@@ -30,12 +35,12 @@ export function LibraryPageComponent() {
   const handleAskQuestion = async () => {
     if (!question) return;
     setLoading(true);
-    setAnswer(null); // Update this line
+    setAnswer(null);
     try {
       const data = selectedVideo
         ? await api.questions.askAboutVideo(selectedVideo, question)
         : await api.questions.ask(question);
-      setAnswer(data); // Store the entire response, not just the answer text
+      setAnswer(data);
     } catch (error) {
       console.error("Error asking question:", error);
     } finally {
@@ -45,7 +50,7 @@ export function LibraryPageComponent() {
 
   return (
     <>
-      <NavBar user={{}} />
+      <NavBar user={user} />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">Your Video Library</h1>
         <VideoUpload onVideoAdded={fetchVideos} />

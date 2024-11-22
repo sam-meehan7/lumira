@@ -4,7 +4,6 @@ import {
   LightBulbIcon,
   ClockIcon,
 } from "@heroicons/react/24/outline";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -125,7 +124,7 @@ function ProcessStep({
 }) {
   return (
     <div className="text-center">
-      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-600 text-white text-xl font-bold mb-4">
+      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-black text-white text-xl font-bold mb-4">
         {number}
       </div>
       <h3 className="text-xl font-semibold mb-2">{title}</h3>

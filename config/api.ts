@@ -1,3 +1,5 @@
+import { createClient } from "@/utils/supabase/client";
+
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -35,6 +37,17 @@ export interface IndexStats {
   }[];
 }
 
+// Helper function to get auth header
+async function getAuthHeader() {
+  const supabase = createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  return {
+    Authorization: `Bearer ${session?.access_token || ""}`,
+  };
+}
+
 // API client with error handling
 class ApiError extends Error {
   constructor(public status: number, message: string) {
@@ -55,14 +68,21 @@ export const api = {
   // Videos endpoints
   videos: {
     getAll: async (): Promise<Video[]> => {
-      const response = await fetch(`${API_BASE_URL}/api/videos`);
+      const headers = await getAuthHeader();
+      const response = await fetch(`${API_BASE_URL}/api/videos`, {
+        headers,
+      });
       return handleResponse<Video[]>(response);
     },
 
     upload: async (videoUrl: string) => {
+      const headers = await getAuthHeader();
       const response = await fetch(`${API_BASE_URL}/api/upload`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          ...headers,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ videoUrl }),
       });
       return handleResponse<{ message: string }>(response);
@@ -72,9 +92,13 @@ export const api = {
   // Questions endpoints
   questions: {
     ask: async (question: string): Promise<AnswerResponse> => {
+      const headers = await getAuthHeader();
       const response = await fetch(`${API_BASE_URL}/api/ask`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          ...headers,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ question }),
       });
       return handleResponse<AnswerResponse>(response);
@@ -84,20 +108,16 @@ export const api = {
       videoId: string,
       question: string
     ): Promise<AnswerResponse> => {
+      const headers = await getAuthHeader();
       const response = await fetch(`${API_BASE_URL}/api/ask/${videoId}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          ...headers,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ question }),
       });
       return handleResponse<AnswerResponse>(response);
-    },
-  },
-
-  // Stats endpoint
-  stats: {
-    getIndexStats: async (): Promise<IndexStats> => {
-      const response = await fetch(`${API_BASE_URL}/api/index-stats`);
-      return handleResponse<IndexStats>(response);
     },
   },
 };
