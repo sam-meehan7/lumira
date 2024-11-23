@@ -120,4 +120,19 @@ export const api = {
       return handleResponse<AnswerResponse>(response);
     },
   },
+  preferences: {
+    updatePayment: async (willingToPay: boolean) => {
+      const headers = await getAuthHeader();
+      const response = await fetch(`${API_BASE_URL}/api/payment-preference`, {
+        method: "POST",
+        headers: {
+          ...headers,
+          "Content-Type": "application/json",
+        },
+        // When using Body(...) in FastAPI, we send the raw value
+        body: JSON.stringify(willingToPay),
+      });
+      return handleResponse<{ message: string; data: any }>(response);
+    },
+  },
 };
