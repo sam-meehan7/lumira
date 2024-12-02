@@ -9,6 +9,7 @@ interface QuestionSectionProps {
   answer: AnswerResponse | null;
   loading: boolean;
   onQuestionChange: (question: string) => void;
+  selectedVideo: string | null;
   onAskQuestion: () => void;
 }
 
@@ -22,6 +23,7 @@ export function QuestionSection({
   question,
   answer,
   loading,
+  selectedVideo,
   onQuestionChange,
   onAskQuestion,
 }: QuestionSectionProps) {
@@ -31,18 +33,31 @@ export function QuestionSection({
       <Card>
         <CardContent className="p-4">
           <Input
-            placeholder="Type your question here"
+            placeholder={
+              selectedVideo
+                ? "Type your question here"
+                : "Please select a video first"
+            }
             value={question}
             onChange={(e) => onQuestionChange(e.target.value)}
             className="mb-4"
+            disabled={!selectedVideo}
           />
-          <Button onClick={onAskQuestion} disabled={loading} className="w-full">
+          <Button
+            onClick={onAskQuestion}
+            disabled={loading || !selectedVideo}
+            className="w-full"
+          >
             {loading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <Search className="mr-2 h-4 w-4" />
             )}
-            {loading ? "Thinking..." : "Ask Question"}
+            {loading
+              ? "Thinking..."
+              : selectedVideo
+              ? "Ask Question"
+              : "Select a video first"}
           </Button>
         </CardContent>
         {answer && (

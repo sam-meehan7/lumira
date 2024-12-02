@@ -18,6 +18,7 @@ export function LibraryPageComponent({ user }: LibraryPageComponentProps) {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState<AnswerResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [videosLoading, setVideosLoading] = useState(true);
 
   useEffect(() => {
     fetchVideos();
@@ -25,10 +26,13 @@ export function LibraryPageComponent({ user }: LibraryPageComponentProps) {
 
   const fetchVideos = async () => {
     try {
+      setVideosLoading(true);
       const data = await api.videos.getAll();
       setVideos(data);
     } catch (error) {
       console.error("Error fetching videos:", error);
+    } finally {
+      setVideosLoading(false);
     }
   };
 
@@ -48,6 +52,8 @@ export function LibraryPageComponent({ user }: LibraryPageComponentProps) {
     }
   };
 
+  // ... existing imports ...
+
   return (
     <>
       <NavBar user={user} />
@@ -55,16 +61,32 @@ export function LibraryPageComponent({ user }: LibraryPageComponentProps) {
         <h1 className="text-3xl font-bold mb-8">Your Video Library</h1>
         <VideoUpload onVideoAdded={fetchVideos} />
         <div className="grid md:grid-cols-2 gap-8">
-          <VideoList
-            videos={videos}
-            selectedVideo={selectedVideo}
-            onVideoSelect={setSelectedVideo}
-          />
+          {videosLoading ? (
+            <div className="space-y-4">
+              {[...Array(3)].map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-gray-200 rounded-lg p-4 animate-pulse"
+                >
+                  <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+                  <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <VideoList
+              videos={videos}
+              selectedVideo={selectedVideo}
+              onVideoSelect={setSelectedVideo}
+              loading={videosLoading}
+            />
+          )}
           <QuestionSection
             question={question}
             answer={answer}
             loading={loading}
             onQuestionChange={setQuestion}
+            selectedVideo={selectedVideo}
             onAskQuestion={handleAskQuestion}
           />
         </div>
