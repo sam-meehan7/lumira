@@ -13,18 +13,23 @@ interface VideoListProps {
   videos: Video[];
   selectedVideo: string | null;
   onVideoSelect: (videoId: string) => void;
+  loading: boolean;
 }
 
 export function VideoList({
   videos,
   selectedVideo,
   onVideoSelect,
+  loading
 }: VideoListProps) {
   return (
     <div>
       <h2 className="text-2xl font-semibold mb-4">Videos</h2>
       <div className="grid gap-4">
-        {videos.map((video) => (
+        {loading ? (
+          <div>Loading...</div>
+        ) : (
+          videos.map((video) => (
           <Card
             key={video.video_id}
             className={`cursor-pointer transition-colors ${
@@ -46,7 +51,7 @@ export function VideoList({
               </div>
             </CardContent>
           </Card>
-        ))}
+        )))}
       </div>
     </div>
   );
